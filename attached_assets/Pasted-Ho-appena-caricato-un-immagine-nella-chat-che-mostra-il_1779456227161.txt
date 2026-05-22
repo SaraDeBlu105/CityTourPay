@@ -1,0 +1,30 @@
+Ho appena caricato un’immagine nella chat che mostra il layout esatto che voglio per il sito "City Tour Italy". Quell’immagine è il riferimento visivo di Civitatis (https://www.civitatis.com/it/roma/).
+
+Il sito attuale ha le funzionalità giuste (filtri, login, prenotazioni) ma il layout NON è uguale all’immagine. Voglio che modifichi **esclusivamente la struttura e l’allineamento** per essere identico a quello dell’immagine, senza cambiare le funzionalità già esistenti (filtri, card, autenticazione, dashboard).
+
+👉 Richieste precise:
+
+1. **Layout della home** – deve rispecchiare fedelmente l’immagine:
+   - Sidebar sinistra con i filti (categoria, prezzo, durata, voto). Non filtri in alto.
+   - Griglia di card a destra: 3 o 4 colonne su desktop, responsive.
+   - Ogni card: immagine in alto, titolo, prezzo, durata, voto (stelle), e un bottone o link “Dettagli” (come nell’immagine).
+   - L’hero con la ricerca deve rimanere sopra la sidebar+grid (come nell’immagine).
+
+2. **Stessi spazi, margini, padding** – usa lo stesso sistema di griglia (es. Flex o Grid) osservabile nell’immagine. Le card devono avere ombre leggere, bordi arrotondati, allineamento perfetto.
+
+3. **Colori e font** – mantieni la palette e i font che hai già scelto per "City Tour Italy" (non copiare i colori di Civitatis). Solo la **struttura** deve essere uguale.
+
+4. **Funzionalità** – i filtri laterali devono funzionare esattamente come ora (categoria, prezzo, durata, voto). Non toccare la logica di backend, autenticazione o prenotazioni.
+
+5. **Responsive** – su mobile la sidebar deve diventare un menu a tendina o collassabile, come nell’immagine (o come nelle best practice). Le card devono impilarsi.
+
+6. **Verifica finale** – dopo le modifiche, mostrami un screenshot o esegui il sito in anteprima in modo che io possa confrontare con l’immagine che ho caricato.
+
+Se non riesci a “leggere” l’immagine automaticamente (Replit AI non ha visione), descrivo brevemente il layout: 
+- Header con logo e link (login/registrazione/dashboard).
+- Hero con barra di ricerca e destinazione Roma.
+- Sotto: due colonne – sinistra (larghezza ~25%) con filtri impilati (categorie con checkbox, range prezzo slider, durata bottoni, voto stelle). 
+- Destra (~75%) griglia di card (3 card per riga su desktop). 
+- Ogni card ha immagine in alto (16:9), titolo in grassetto, prezzo in euro, durata (es. “3 ore”), voto (stelle piene/mezze), e un pulsante “Prenota” o “Vedi dettagli”.
+
+Applica subito queste modifiche al codice esistente. Non generare un nuovo progetto, modifica quello attuale.
