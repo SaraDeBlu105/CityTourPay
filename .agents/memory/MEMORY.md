@@ -1,0 +1,4 @@
+- [CSS import order](css-import-order.md) — Google Fonts @import url() must be line 1 in index.css before @import "tailwindcss"
+- [RemoveFavorite mutation sig](api-mutation-sigs.md) — removeFavorite.mutate takes {experienceId:number} not bare number; check generated types after codegen
+- [Admin auth pattern](admin-auth.md) — isAdmin stored in JWT payload; requireAdmin middleware; make user admin via SQL UPDATE users SET is_admin=true
+- [Navbar import path](navbar-import.md) — Navbar is at src/components/layout/Navbar.tsx so AuthContext import must be ../../contexts/AuthContext

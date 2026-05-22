@@ -6,10 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface User {
+export interface Coupon {
   id: number;
-  name: string;
-  email: string;
-  isAdmin: boolean;
+  code: string;
+  discountPercent: number;
+  validUntil: string;
+  isActive: boolean;
   createdAt: string;
 }

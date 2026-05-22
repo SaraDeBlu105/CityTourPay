@@ -6,13 +6,12 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface BookingInput {
-  experienceId: number;
-  bookedDate: string;
+export interface ReviewInput {
   /**
      * @minimum 1
-     * @maximum 10
+     * @maximum 5
      */
-  participants: number;
-  couponCode?: string | null;
+  rating: number;
+  /** @minLength 10 */
+  comment: string;
 }

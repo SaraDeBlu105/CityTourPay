@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { ShieldCheck } from "lucide-react";
 
 export function Navbar() {
   const { user, logout } = useAuth();
@@ -14,6 +15,15 @@ export function Navbar() {
         <nav className="flex items-center gap-4">
           {user ? (
             <>
+              {user.isAdmin && (
+                <Link
+                  href="/admin"
+                  className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  Admin
+                </Link>
+              )}
               <Link href="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">
                 Dashboard
               </Link>

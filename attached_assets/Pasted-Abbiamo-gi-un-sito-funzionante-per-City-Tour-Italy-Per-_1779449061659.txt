@@ -1,0 +1,36 @@
+Abbiamo già un sito funzionante per City Tour Italy. Per favore modifica il progetto esistente aggiungendo queste funzionalità:
+
+## 1. SISTEMA DI RECENSIONI (con moderazione admin)
+- QUALSIASI utente loggato può lasciare una recensione (anche senza aver prenotato).
+- La recensione ha: voto (1-5 stelle), commento, data, nome utente.
+- Le recensioni NON appaiono subito nella pagina. Devono essere approvate dall'admin prima di diventare visibili al pubblico.
+- Nell'admin dashboard, aggiungi una sezione "Recensioni in attesa" dove l'admin può:
+  - Visualizzare tutte le recensioni non ancora approvate
+  - Approvare (diventano visibili sulla pagina esperienza)
+  - Cancellare (se false o dannose)
+  - Rispondere pubblicamente alla recensione (il campo "reply" viene salvato nel database e mostrato sotto la recensione approvata)
+- Modifica la tabella `Review` (o creala se non esiste) con campi: id, userId, experienceId, rating, comment, reply (text, nullable), isApproved (boolean, default false), createdAt, updatedAt.
+
+## 2. SISTEMA COUPON / SCONTO
+- Aggiungi una tabella `Coupon` con campi: id, code (stringa univoca), discountPercent (intero, es. 10 per 10%), validUntil (data), isActive (boolean), createdAt.
+- Nell'admin dashboard, aggiungi una sezione "Coupon" dove l'admin può:
+  - Creare un nuovo coupon (inserire codice, percentuale sconto, data scadenza)
+  - Visualizzare tutti i coupon esistenti
+  - Disattivare/attivare un coupon
+  - Eliminare un coupon
+- Nel checkout/prenotazione (pagina dettaglio esperienza), aggiungi un campo "Codice sconto" con un pulsante "Applica". Se il codice è valido (esiste, è attivo, non scaduto), lo sconto viene applicato al prezzo finale. Mostra "Prezzo originale: €XX, Sconto: -€YY, Totale: €ZZ".
+- La prenotazione salvata deve includere il coupon usato (opzionale, aggiungi campo `couponId` a Booking).
+
+## 3. LOGIC.md (file di documentazione)
+Crea un file `LOGIC.md` nella root del progetto che spiega in poche righe:
+- Come aggiungere un nuovo coupon (esempio: "Vai su Admin → Coupon → Crea nuovo, inserisci codice WELCOME10, sconto 10%, data scadenza 31/12/2025").
+- Come approvare o cancellare una recensione (Admin → Recensioni in attesa → Approva o Elimina).
+- Come rispondere a una recensione (Admin → Recensioni in attesa → clicca "Rispondi" → scrivi la risposta → salva).
+- Dove si trovano i file principali (es. `artifacts/city-tour-italy/src/pages/experience-detail.tsx` per la prenotazione, `artifacts/api-server/src/routes/admin.ts` per le API admin).
+- Come rigenerare il client API dopo modifiche allo schema: `pnpm --filter @workspace/api-spec run codegen`.
+
+## IMPORTANTE:
+- Mantieni l'autenticazione Clerk esistente.
+- Le recensioni NON approvate NON devono essere visibili agli utenti normali.
+- Fornisci le migrazioni Drizzle per i nuovi campi/tabelle.
+- Non rompere le funzionalità esistenti (filtri, prenotazioni, dashboard utente).

@@ -19,6 +19,12 @@ tags:
     description: Favorites
   - name: users
     description: User profile
+  - name: reviews
+    description: Reviews
+  - name: coupons
+    description: Coupons
+  - name: admin
+    description: Admin operations
 paths:
   /healthz:
     get:
@@ -107,6 +113,71 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MarketplaceStats"
+
+  /experiences/{id}/reviews:
+    get:
+      operationId: listExperienceReviews
+      tags: [reviews]
+      summary: List approved reviews for an experience
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of approved reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+    post:
+      operationId: createReview
+      tags: [reviews]
+      summary: Submit a review for an experience
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewInput"
+      responses:
+        "201":
+          description: Review submitted (pending approval)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
+        "401":
+          description: Unauthorized
+
+  /coupons/validate:
+    get:
+      operationId: validateCoupon
+      tags: [coupons]
+      summary: Validate a coupon code
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Coupon validation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CouponValidation"
 
   /auth/register:
     post:
@@ -286,6 +357,166 @@ paths:
         "401":
           description: Unauthorized
 
+  /admin/reviews/pending:
+    get:
+      operationId: listPendingReviews
+      tags: [admin]
+      summary: List reviews pending moderation
+      responses:
+        "200":
+          description: List of pending reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+        "403":
+          description: Forbidden
+
+  /admin/reviews/{id}/approve:
+    patch:
+      operationId: approveReview
+      tags: [admin]
+      summary: Approve a review
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Approved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
+        "403":
+          description: Forbidden
+
+  /admin/reviews/{id}/reply:
+    patch:
+      operationId: replyToReview
+      tags: [admin]
+      summary: Add a public reply to a review
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplyInput"
+      responses:
+        "200":
+          description: Reply saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
+        "403":
+          description: Forbidden
+
+  /admin/reviews/{id}:
+    delete:
+      operationId: deleteReview
+      tags: [admin]
+      summary: Delete a review
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "403":
+          description: Forbidden
+
+  /admin/coupons:
+    get:
+      operationId: listCoupons
+      tags: [admin]
+      summary: List all coupons
+      responses:
+        "200":
+          description: List of coupons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Coupon"
+        "403":
+          description: Forbidden
+    post:
+      operationId: createCoupon
+      tags: [admin]
+      summary: Create a coupon
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CouponInput"
+      responses:
+        "201":
+          description: Coupon created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Coupon"
+        "403":
+          description: Forbidden
+
+  /admin/coupons/{id}:
+    patch:
+      operationId: updateCoupon
+      tags: [admin]
+      summary: Update a coupon (activate/deactivate)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CouponUpdate"
+      responses:
+        "200":
+          description: Updated coupon
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Coupon"
+        "403":
+          description: Forbidden
+    delete:
+      operationId: deleteCoupon
+      tags: [admin]
+      summary: Delete a coupon
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "403":
+          description: Forbidden
+
 components:
   schemas:
     HealthStatus:
@@ -337,7 +568,7 @@ components:
 
     User:
       type: object
-      required: [id, name, email, createdAt]
+      required: [id, name, email, isAdmin, createdAt]
       properties:
         id:
           type: integer
@@ -345,6 +576,8 @@ components:
           type: string
         email:
           type: string
+        isAdmin:
+          type: boolean
         createdAt:
           type: string
 
@@ -371,6 +604,15 @@ components:
           type: string
         participants:
           type: integer
+        couponId:
+          type: integer
+          nullable: true
+        discountPercent:
+          type: integer
+          nullable: true
+        totalPrice:
+          type: number
+          nullable: true
         createdAt:
           type: string
         experience:
@@ -390,6 +632,66 @@ components:
           type: string
         experience:
           $ref: "#/components/schemas/Experience"
+
+    Review:
+      type: object
+      required: [id, userId, experienceId, rating, comment, isApproved, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        experienceId:
+          type: integer
+        rating:
+          type: integer
+        comment:
+          type: string
+        reply:
+          type: string
+          nullable: true
+        isApproved:
+          type: boolean
+        userName:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    Coupon:
+      type: object
+      required: [id, code, discountPercent, validUntil, isActive, createdAt]
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        discountPercent:
+          type: integer
+        validUntil:
+          type: string
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+
+    CouponValidation:
+      type: object
+      required: [valid]
+      properties:
+        valid:
+          type: boolean
+        discountPercent:
+          type: integer
+          nullable: true
+        code:
+          type: string
+          nullable: true
+        message:
+          type: string
+          nullable: true
 
     RegisterInput:
       type: object
@@ -427,6 +729,9 @@ components:
           type: integer
           minimum: 1
           maximum: 10
+        couponCode:
+          type: string
+          nullable: true
 
     FavoriteInput:
       type: object
@@ -442,3 +747,49 @@ components:
         name:
           type: string
           minLength: 2
+
+    ReviewInput:
+      type: object
+      required: [rating, comment]
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+          minLength: 10
+
+    ReplyInput:
+      type: object
+      required: [reply]
+      properties:
+        reply:
+          type: string
+
+    CouponInput:
+      type: object
+      required: [code, discountPercent, validUntil]
+      properties:
+        code:
+          type: string
+        discountPercent:
+          type: integer
+          minimum: 1
+          maximum: 100
+        validUntil:
+          type: string
+        isActive:
+          type: boolean
+
+    CouponUpdate:
+      type: object
+      properties:
+        isActive:
+          type: boolean
+        code:
+          type: string
+        discountPercent:
+          type: integer
+        validUntil:
+          type: string

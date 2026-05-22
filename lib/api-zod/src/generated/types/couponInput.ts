@@ -6,13 +6,13 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface BookingInput {
-  experienceId: number;
-  bookedDate: string;
+export interface CouponInput {
+  code: string;
   /**
      * @minimum 1
-     * @maximum 10
+     * @maximum 100
      */
-  participants: number;
-  couponCode?: string | null;
+  discountPercent: number;
+  validUntil: string;
+  isActive?: boolean;
 }

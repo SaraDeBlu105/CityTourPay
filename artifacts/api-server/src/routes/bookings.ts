@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
-import { db, bookingsTable, experiencesTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { db, bookingsTable, experiencesTable, couponsTable } from "@workspace/db";
+import { eq, and } from "drizzle-orm";
 import { CreateBookingBody, ListMyBookingsResponse } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/auth";
 import type { AuthPayload } from "../middlewares/auth";
@@ -17,7 +17,7 @@ router.post("/bookings", requireAuth, async (req, res): Promise<void> => {
     return;
   }
 
-  const { experienceId, bookedDate, participants } = parsed.data;
+  const { experienceId, bookedDate, participants, couponCode } = parsed.data;
 
   const [experience] = await db
     .select()
@@ -30,9 +30,37 @@ router.post("/bookings", requireAuth, async (req, res): Promise<void> => {
     return;
   }
 
+  // Validate and apply coupon if provided
+  let couponId: number | null = null;
+  let discountPercent: number | null = null;
+  let totalPrice = experience.price * participants;
+
+  if (couponCode) {
+    const today = new Date().toISOString().split("T")[0];
+    const [coupon] = await db
+      .select()
+      .from(couponsTable)
+      .where(and(eq(couponsTable.code, couponCode.toUpperCase()), eq(couponsTable.isActive, true)))
+      .limit(1);
+
+    if (coupon && coupon.validUntil >= today) {
+      couponId = coupon.id;
+      discountPercent = coupon.discountPercent;
+      totalPrice = totalPrice * (1 - coupon.discountPercent / 100);
+    }
+  }
+
   const [booking] = await db
     .insert(bookingsTable)
-    .values({ userId, experienceId, bookedDate, participants })
+    .values({
+      userId,
+      experienceId,
+      bookedDate,
+      participants,
+      couponId: couponId ?? undefined,
+      discountPercent: discountPercent ?? undefined,
+      totalPrice,
+    })
     .returning();
 
   res.status(201).json({
@@ -41,6 +69,9 @@ router.post("/bookings", requireAuth, async (req, res): Promise<void> => {
     experienceId: booking.experienceId,
     bookedDate: booking.bookedDate,
     participants: booking.participants,
+    couponId: booking.couponId ?? null,
+    discountPercent: booking.discountPercent ?? null,
+    totalPrice: booking.totalPrice ?? null,
     createdAt: booking.createdAt.toISOString(),
     experience: {
       ...experience,
@@ -59,6 +90,9 @@ router.get("/bookings/my", requireAuth, async (req, res): Promise<void> => {
       experienceId: bookingsTable.experienceId,
       bookedDate: bookingsTable.bookedDate,
       participants: bookingsTable.participants,
+      couponId: bookingsTable.couponId,
+      discountPercent: bookingsTable.discountPercent,
+      totalPrice: bookingsTable.totalPrice,
       createdAt: bookingsTable.createdAt,
       experience: {
         id: experiencesTable.id,
@@ -83,6 +117,9 @@ router.get("/bookings/my", requireAuth, async (req, res): Promise<void> => {
     ListMyBookingsResponse.parse(
       bookings.map((b) => ({
         ...b,
+        couponId: b.couponId ?? null,
+        discountPercent: b.discountPercent ?? null,
+        totalPrice: b.totalPrice ?? null,
         createdAt: b.createdAt.toISOString(),
         experience: b.experience
           ? { ...b.experience, createdAt: b.experience.createdAt.toISOString() }

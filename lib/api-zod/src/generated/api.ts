@@ -78,6 +78,62 @@ export const GetExperienceStatsResponse = zod.object({
 
 
 /**
+ * @summary List approved reviews for an experience
+ */
+export const ListExperienceReviewsParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ListExperienceReviewsResponseItem = zod.object({
+  "id": zod.number(),
+  "userId": zod.number(),
+  "experienceId": zod.number(),
+  "rating": zod.number(),
+  "comment": zod.string(),
+  "reply": zod.string().nullish(),
+  "isApproved": zod.boolean(),
+  "userName": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+export const ListExperienceReviewsResponse = zod.array(ListExperienceReviewsResponseItem)
+
+
+/**
+ * @summary Submit a review for an experience
+ */
+export const CreateReviewParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const createReviewBodyRatingMax = 5;
+
+export const createReviewBodyCommentMin = 10;
+
+
+
+export const CreateReviewBody = zod.object({
+  "rating": zod.number().min(1).max(createReviewBodyRatingMax),
+  "comment": zod.string().min(createReviewBodyCommentMin)
+})
+
+
+/**
+ * @summary Validate a coupon code
+ */
+export const ValidateCouponQueryParams = zod.object({
+  "code": zod.coerce.string()
+})
+
+export const ValidateCouponResponse = zod.object({
+  "valid": zod.boolean(),
+  "discountPercent": zod.number().nullish(),
+  "code": zod.string().nullish(),
+  "message": zod.string().nullish()
+})
+
+
+/**
  * @summary Register new user
  */
 export const registerBodyNameMin = 2;
@@ -106,6 +162,7 @@ export const LoginResponse = zod.object({
   "id": zod.number(),
   "name": zod.string(),
   "email": zod.string(),
+  "isAdmin": zod.boolean(),
   "createdAt": zod.string()
 }),
   "token": zod.string()
@@ -119,6 +176,7 @@ export const GetMeResponse = zod.object({
   "id": zod.number(),
   "name": zod.string(),
   "email": zod.string(),
+  "isAdmin": zod.boolean(),
   "createdAt": zod.string()
 })
 
@@ -133,7 +191,8 @@ export const createBookingBodyParticipantsMax = 10;
 export const CreateBookingBody = zod.object({
   "experienceId": zod.number(),
   "bookedDate": zod.string(),
-  "participants": zod.number().min(1).max(createBookingBodyParticipantsMax)
+  "participants": zod.number().min(1).max(createBookingBodyParticipantsMax),
+  "couponCode": zod.string().nullish()
 })
 
 
@@ -146,6 +205,9 @@ export const ListMyBookingsResponseItem = zod.object({
   "experienceId": zod.number(),
   "bookedDate": zod.string(),
   "participants": zod.number(),
+  "couponId": zod.number().nullish(),
+  "discountPercent": zod.number().nullish(),
+  "totalPrice": zod.number().nullish(),
   "createdAt": zod.string(),
   "experience": zod.object({
   "id": zod.number(),
@@ -220,7 +282,141 @@ export const UpdateProfileResponse = zod.object({
   "id": zod.number(),
   "name": zod.string(),
   "email": zod.string(),
+  "isAdmin": zod.boolean(),
   "createdAt": zod.string()
+})
+
+
+/**
+ * @summary List reviews pending moderation
+ */
+export const ListPendingReviewsResponseItem = zod.object({
+  "id": zod.number(),
+  "userId": zod.number(),
+  "experienceId": zod.number(),
+  "rating": zod.number(),
+  "comment": zod.string(),
+  "reply": zod.string().nullish(),
+  "isApproved": zod.boolean(),
+  "userName": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+export const ListPendingReviewsResponse = zod.array(ListPendingReviewsResponseItem)
+
+
+/**
+ * @summary Approve a review
+ */
+export const ApproveReviewParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ApproveReviewResponse = zod.object({
+  "id": zod.number(),
+  "userId": zod.number(),
+  "experienceId": zod.number(),
+  "rating": zod.number(),
+  "comment": zod.string(),
+  "reply": zod.string().nullish(),
+  "isApproved": zod.boolean(),
+  "userName": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+/**
+ * @summary Add a public reply to a review
+ */
+export const ReplyToReviewParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ReplyToReviewBody = zod.object({
+  "reply": zod.string()
+})
+
+export const ReplyToReviewResponse = zod.object({
+  "id": zod.number(),
+  "userId": zod.number(),
+  "experienceId": zod.number(),
+  "rating": zod.number(),
+  "comment": zod.string(),
+  "reply": zod.string().nullish(),
+  "isApproved": zod.boolean(),
+  "userName": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+/**
+ * @summary Delete a review
+ */
+export const DeleteReviewParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List all coupons
+ */
+export const ListCouponsResponseItem = zod.object({
+  "id": zod.number(),
+  "code": zod.string(),
+  "discountPercent": zod.number(),
+  "validUntil": zod.string(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.string()
+})
+export const ListCouponsResponse = zod.array(ListCouponsResponseItem)
+
+
+/**
+ * @summary Create a coupon
+ */
+export const createCouponBodyDiscountPercentMax = 100;
+
+
+
+export const CreateCouponBody = zod.object({
+  "code": zod.string(),
+  "discountPercent": zod.number().min(1).max(createCouponBodyDiscountPercentMax),
+  "validUntil": zod.string(),
+  "isActive": zod.boolean().optional()
+})
+
+
+/**
+ * @summary Update a coupon (activate/deactivate)
+ */
+export const UpdateCouponParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateCouponBody = zod.object({
+  "isActive": zod.boolean().optional(),
+  "code": zod.string().optional(),
+  "discountPercent": zod.number().optional(),
+  "validUntil": zod.string().optional()
+})
+
+export const UpdateCouponResponse = zod.object({
+  "id": zod.number(),
+  "code": zod.string(),
+  "discountPercent": zod.number(),
+  "validUntil": zod.string(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Delete a coupon
+ */
+export const DeleteCouponParams = zod.object({
+  "id": zod.coerce.number()
 })
 
 

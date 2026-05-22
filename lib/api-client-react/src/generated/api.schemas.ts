@@ -34,6 +34,7 @@ export interface User {
   id: number;
   name: string;
   email: string;
+  isAdmin: boolean;
   createdAt: string;
 }
 
@@ -48,6 +49,9 @@ export interface Booking {
   experienceId: number;
   bookedDate: string;
   participants: number;
+  couponId?: number | null;
+  discountPercent?: number | null;
+  totalPrice?: number | null;
   createdAt: string;
   experience?: Experience;
 }
@@ -58,6 +62,35 @@ export interface Favorite {
   experienceId: number;
   createdAt: string;
   experience?: Experience;
+}
+
+export interface Review {
+  id: number;
+  userId: number;
+  experienceId: number;
+  rating: number;
+  comment: string;
+  reply?: string | null;
+  isApproved: boolean;
+  userName?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Coupon {
+  id: number;
+  code: string;
+  discountPercent: number;
+  validUntil: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface CouponValidation {
+  valid: boolean;
+  discountPercent?: number | null;
+  code?: string | null;
+  message?: string | null;
 }
 
 export interface RegisterInput {
@@ -81,6 +114,7 @@ export interface BookingInput {
      * @maximum 10
      */
   participants: number;
+  couponCode?: string | null;
 }
 
 export interface FavoriteInput {
@@ -90,6 +124,38 @@ export interface FavoriteInput {
 export interface ProfileUpdate {
   /** @minLength 2 */
   name: string;
+}
+
+export interface ReviewInput {
+  /**
+     * @minimum 1
+     * @maximum 5
+     */
+  rating: number;
+  /** @minLength 10 */
+  comment: string;
+}
+
+export interface ReplyInput {
+  reply: string;
+}
+
+export interface CouponInput {
+  code: string;
+  /**
+     * @minimum 1
+     * @maximum 100
+     */
+  discountPercent: number;
+  validUntil: string;
+  isActive?: boolean;
+}
+
+export interface CouponUpdate {
+  isActive?: boolean;
+  code?: string;
+  discountPercent?: number;
+  validUntil?: string;
 }
 
 export type ListExperiencesParams = {
@@ -109,4 +175,8 @@ export const ListExperiencesDuration = {
   medium: 'medium',
   long: 'long',
 } as const;
+
+export type ValidateCouponParams = {
+code: string;
+};
 

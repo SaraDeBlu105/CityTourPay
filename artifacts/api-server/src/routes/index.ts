@@ -5,6 +5,9 @@ import experiencesRouter from "./experiences";
 import bookingsRouter from "./bookings";
 import favoritesRouter from "./favorites";
 import usersRouter from "./users";
+import reviewsRouter from "./reviews";
+import couponsRouter from "./coupons";
+import adminRouter from "./admin";
 
 const router: IRouter = Router();
 
@@ -14,5 +17,8 @@ router.use(experiencesRouter);
 router.use(bookingsRouter);
 router.use(favoritesRouter);
 router.use(usersRouter);
+router.use(reviewsRouter);
+router.use(couponsRouter);
+router.use(adminRouter);
 
 export default router;

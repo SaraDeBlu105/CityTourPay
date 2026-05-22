@@ -9,6 +9,16 @@ import type { Request } from "express";
 
 const router: IRouter = Router();
 
+function serializeUser(user: typeof usersTable.$inferSelect) {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    isAdmin: user.isAdmin,
+    createdAt: user.createdAt.toISOString(),
+  };
+}
+
 router.post("/auth/register", async (req, res): Promise<void> => {
   const parsed = RegisterBody.safeParse(req.body);
   if (!parsed.success) {
@@ -30,17 +40,9 @@ router.post("/auth/register", async (req, res): Promise<void> => {
     .values({ name, email, passwordHash })
     .returning();
 
-  const token = signToken({ userId: user.id, email: user.email });
+  const token = signToken({ userId: user.id, email: user.email, isAdmin: user.isAdmin });
 
-  res.status(201).json({
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      createdAt: user.createdAt.toISOString(),
-    },
-    token,
-  });
+  res.status(201).json({ user: serializeUser(user), token });
 });
 
 router.post("/auth/login", async (req, res): Promise<void> => {
@@ -64,17 +66,9 @@ router.post("/auth/login", async (req, res): Promise<void> => {
     return;
   }
 
-  const token = signToken({ userId: user.id, email: user.email });
+  const token = signToken({ userId: user.id, email: user.email, isAdmin: user.isAdmin });
 
-  res.json({
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      createdAt: user.createdAt.toISOString(),
-    },
-    token,
-  });
+  res.json({ user: serializeUser(user), token });
 });
 
 router.post("/auth/logout", async (_req, res): Promise<void> => {
@@ -88,12 +82,7 @@ router.get("/auth/me", requireAuth, async (req, res): Promise<void> => {
     res.status(401).json({ error: "User not found" });
     return;
   }
-  res.json(GetMeResponse.parse({
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    createdAt: user.createdAt.toISOString(),
-  }));
+  res.json(GetMeResponse.parse(serializeUser(user)));
 });
 
 export default router;

@@ -13,6 +13,9 @@ export interface Booking {
   experienceId: number;
   bookedDate: string;
   participants: number;
+  couponId?: number | null;
+  discountPercent?: number | null;
+  totalPrice?: number | null;
   createdAt: string;
   experience?: Experience;
 }

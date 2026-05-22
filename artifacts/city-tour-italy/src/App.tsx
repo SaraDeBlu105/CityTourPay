@@ -8,12 +8,13 @@ import ExperienceDetail from "@/pages/experience";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
 import Dashboard from "@/pages/dashboard";
+import Admin from "@/pages/admin";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
-function ProtectedRoute({ component: Component }: { component: any }) {
+function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
   const { user, isLoading } = useAuth();
   const [, setLocation] = useLocation();
 
@@ -38,6 +39,9 @@ function Router() {
       <Route path="/register" component={Register} />
       <Route path="/dashboard">
         <ProtectedRoute component={Dashboard} />
+      </Route>
+      <Route path="/admin">
+        <ProtectedRoute component={Admin} />
       </Route>
       <Route component={NotFound} />
     </Switch>

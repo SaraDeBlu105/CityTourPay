@@ -40,7 +40,7 @@ export default function Dashboard() {
   const updateProfile = useUpdateProfile();
 
   const handleRemoveFavorite = (experienceId: number) => {
-    removeFavorite.mutate(experienceId, {
+    removeFavorite.mutate({ experienceId }, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListFavoritesQueryKey() });
         toast({ title: "Rimosso dai preferiti" });

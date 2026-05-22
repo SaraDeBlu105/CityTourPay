@@ -6,10 +6,6 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-  isAdmin: boolean;
-  createdAt: string;
+export interface ReplyInput {
+  reply: string;
 }
