@@ -1,0 +1,102 @@
+Crea un sito web completo chiamato "City Tour Italy" – un marketplace di escursioni, visite guidate e attività a Roma.
+
+Il sito deve essere **molto simile nelle funzionalità e nella struttura di navigazione** a Civitatis (https://www.civitatis.com/it/roma/), ma con **design e colori completamente rinnovati** (non copiare lo stile di Civitatis). Deve avere:
+
+✅ **Homepage marketplace** con hero, ricerca pre‑selezionata su “Roma”, griglia di card esperienze, filtri funzionanti.
+✅ **Sistema di autenticazione** (registrazione/login con email/password + JWT persistente).
+✅ **Dashboard utente** con prenotazioni effettuate, preferiti e dati personali.
+✅ **Pagina dettaglio esperienza** con descrizione, foto, calendario per scegliere data, numero partecipanti e pulsante “Prenota”.
+✅ **Backend e database** (SQLite con Prisma o Drizzle) con almeno 6 esperienze pre‑caricate su Roma.
+✅ **File LOGIC.md** nella root che spiega chiaramente come manutenere il progetto (aggiungere esperienze, cambiare colori, estendere filtri, modificare autenticazione).
+
+---
+
+### Tecnologie da usare (obbligatoriamente queste per avere un codice eseguibile su Replit):
+
+- **Frontend**: React + Vite + TailwindCSS
+- **Backend**: Node.js + Express
+- **Database**: SQLite (con Prisma ORM per semplicità)
+- **Autenticazione**: bcrypt + JWT (access token in http‑only cookie o localStorage – scegli la soluzione più sicura per Replit)
+
+---
+
+### Requisiti dettagliati (da rispettare 100%):
+
+#### 1. **Branding e design**
+- Nome sito: “City Tour Italy”
+- Logo testuale semplice (es. "City Tour Italy" con un'icona a fianco)
+- Colori principali a tua scelta (non quelli di Civitatis). Esempio gradito: verde scuro `#0F3B3C` + giallo oro `#E6B91E`. Oppure scegli tu una palette moderna e accessibile.
+- Font: Inter o Plus Jakarta Sans (da Google Fonts)
+- Layout responsive, card con hover animato, griglia fluida.
+
+#### 2. **Homepage / Marketplace**
+- Hero section con una barra di ricerca: destinazione già pre‑selezionata “Roma” (non modificabile o modificabile ma con valore di default Roma).
+- Griglia di card esperienze (almeno 6). Ogni card mostra:
+  - Immagine (placeholder o url reale)
+  - Titolo
+  - Prezzo (formato euro)
+  - Durata (es. “3 ore”)
+  - Voto (stelle o punteggio su 5)
+- **Filtri** (posizionati sopra o a lato – scegli layout funzionale):
+  - Per categoria (es. Tour a piedi, Musei, Cibo, Trasferimenti)
+  - Per prezzo (range slider o due input)
+  - Per durata (es. <2h, 2‑4h, >4h)
+  - Per voto (minimo 3 stelle, ecc.)
+- I filtri devono aggiornare la griglia in tempo reale (senza ricaricare la pagina).
+
+#### 3. **Backend e dati**
+- Crea un modello `Experience` con almeno: id, titolo, descrizione breve, descrizione lunga, prezzo, durata, categoria, voto (float), immagineUrl, dataInserimento.
+- Popola il database con **6 esperienze reali su Roma** (es. Colosseo sotterraneo, Musei Vaticani, Trastevere food tour, Galleria Borghese, Catacombe, Villa Adriana). Usa dati fittizi ma credibili.
+- Modelli aggiuntivi: `User` (id, nome, email, password hash), `Booking` (id, userId, experienceId, dataPrenotazione, numeroPartecipanti, dataScelta), `Favorite` (userId, experienceId).
+- API REST (Express) che supporti:
+  - GET /api/experiences (con filtri query)
+  - GET /api/experiences/:id
+  - POST /api/auth/register, /api/auth/login, /api/auth/logout, /api/auth/me
+  - POST /api/bookings (prenotazione)
+  - GET /api/users/bookings (prenotazioni utente loggato)
+  - POST /api/favorites, GET /api/favorites, DELETE /api/favorites/:id
+
+#### 4. **Frontend (React)**
+- Routing con React Router v6: `/` (home), `/experience/:id` (dettaglio), `/login`, `/register`, `/dashboard` (protetta).
+- Protezione rotte: solo utenti autenticati possono vedere dashboard e prenotare.
+- **Pagina dettaglio esperienza**:
+  - Mostra descrizione lunga, foto grande, prezzo.
+  - Calendario (date selezionabili – usa un semplice input date con min=oggi).
+  - Campo numero partecipanti (min 1, max 10).
+  - Pulsante “Prenota” (solo se loggato; se non loggato rimanda al login).
+  - Dopo prenotazione, reindirizza al dashboard con messaggio di successo.
+- **Dashboard utente**:
+  - Tab “Le mie prenotazioni”: elenco delle esperienze prenotate con data scelta e partecipanti.
+  - Tab “Preferiti”: elenco esperienze salvate, possibilità di rimuovere.
+  - Tab “Il mio profilo”: mostra nome ed email, possibilità di aggiornare nome.
+
+#### 5. **Autenticazione persistente**
+- JWT generato al login, salvato in `httpOnly` cookie o in `localStorage` (meglio cookie per sicurezza). Su Replit, usa cookie con `secure: false` (per http) ma spiega nel LOGIC.md come cambiare in produzione.
+- Dopo refresh, l’utente rimane loggato (verifica token).
+- Logout elimina il token.
+
+#### 6. **File LOGIC.md (fondamentale)**
+Deve contenere, in modo chiaro e operativo:
+
+- **Struttura del progetto** (cartelle principali: frontend/, backend/, prisma/, ecc.)
+- **Come aggiungere una nuova esperienza**:
+  - Seeding o API? Quali file toccare? (es. aggiungere un record nel database con Prisma seed)
+- **Come cambiare colori e stili globali**:
+  - Uso di variabili CSS in `index.css` o file Tailwind config.
+- **Come aggiungere un nuovo filtro**:
+  - Modifiche lato backend (filtro nella query) e lato frontend (nuovo input, stato, chiamata API).
+- **Come estendere l’autenticazione** (es. login con Google, aggiunta ruolo admin).
+- **Come aggiungere un campo alle prenotazioni** (es. note speciali).
+- **Come eseguire il progetto** (npm install in root, run dev separato per frontend/backend oppure un unico script con concurrently).
+
+#### 7. **Avvio e configurazione**
+- Il progetto deve essere pronto per essere clonato su Replit e funzionare con `npm install && npm run dev` (o due terminali).
+- Fornire un file `README.md` semplice con istruzioni di avvio.
+- Il database SQLite deve essere creato automaticamente al primo avvio (prisma migrate dev e prisma seed).
+
+---
+
+### Consegna richiesta a Replit:
+Genera l’intero progetto come struttura di cartelle e file, con codice ben commentato e funzionante. Organizza i file in modo pulito (es. `/backend` con models, routes, controllers, middleware; `/frontend` con components, pages, context/auth, API client). Usa Vite con proxy verso il backend per evitare CORS in sviluppo.
+
+Inizia subito a scrivere i file uno per uno, assicurandoti che tutto sia coerente.

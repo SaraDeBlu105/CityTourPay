@@ -1,22 +1,30 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: City Tour Italy API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: experiences
+    description: Tour experiences
+  - name: auth
+    description: Authentication
+  - name: bookings
+    description: Bookings
+  - name: favorites
+    description: Favorites
+  - name: users
+    description: User profile
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +32,260 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /experiences:
+    get:
+      operationId: listExperiences
+      tags: [experiences]
+      summary: List experiences with optional filters
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+        - name: duration
+          in: query
+          schema:
+            type: string
+            enum: [short, medium, long]
+        - name: minRating
+          in: query
+          schema:
+            type: number
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of experiences
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Experience"
+
+  /experiences/{id}:
+    get:
+      operationId: getExperience
+      tags: [experiences]
+      summary: Get experience by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Experience detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Experience"
+        "404":
+          description: Not found
+
+  /experiences/stats/summary:
+    get:
+      operationId: getExperienceStats
+      tags: [experiences]
+      summary: Get marketplace stats summary
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarketplaceStats"
+
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: Registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+
+  /bookings:
+    post:
+      operationId: createBooking
+      tags: [bookings]
+      summary: Create a booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingInput"
+      responses:
+        "201":
+          description: Booking created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "401":
+          description: Unauthorized
+
+  /bookings/my:
+    get:
+      operationId: listMyBookings
+      tags: [bookings]
+      summary: List current user's bookings
+      responses:
+        "200":
+          description: List of bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+        "401":
+          description: Unauthorized
+
+  /favorites:
+    get:
+      operationId: listFavorites
+      tags: [favorites]
+      summary: List current user's favorites
+      responses:
+        "200":
+          description: List of favorites
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Favorite"
+        "401":
+          description: Unauthorized
+    post:
+      operationId: addFavorite
+      tags: [favorites]
+      summary: Add experience to favorites
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FavoriteInput"
+      responses:
+        "201":
+          description: Added to favorites
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Favorite"
+        "401":
+          description: Unauthorized
+
+  /favorites/{experienceId}:
+    delete:
+      operationId: removeFavorite
+      tags: [favorites]
+      summary: Remove experience from favorites
+      parameters:
+        - name: experienceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Removed
+        "401":
+          description: Unauthorized
+
+  /users/profile:
+    patch:
+      operationId: updateProfile
+      tags: [users]
+      summary: Update current user's name
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdate"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +293,152 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    Experience:
+      type: object
+      required: [id, title, shortDescription, longDescription, price, durationMinutes, category, rating, reviewCount, imageUrl, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        shortDescription:
+          type: string
+        longDescription:
+          type: string
+        price:
+          type: number
+        durationMinutes:
+          type: integer
+        category:
+          type: string
+        rating:
+          type: number
+        reviewCount:
+          type: integer
+        imageUrl:
+          type: string
+        createdAt:
+          type: string
+
+    MarketplaceStats:
+      type: object
+      required: [totalExperiences, avgPrice, totalCategories, avgRating]
+      properties:
+        totalExperiences:
+          type: integer
+        avgPrice:
+          type: number
+        totalCategories:
+          type: integer
+        avgRating:
+          type: number
+
+    User:
+      type: object
+      required: [id, name, email, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        createdAt:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [user, token]
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        token:
+          type: string
+
+    Booking:
+      type: object
+      required: [id, userId, experienceId, bookedDate, participants, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        experienceId:
+          type: integer
+        bookedDate:
+          type: string
+        participants:
+          type: integer
+        createdAt:
+          type: string
+        experience:
+          $ref: "#/components/schemas/Experience"
+
+    Favorite:
+      type: object
+      required: [id, userId, experienceId, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        experienceId:
+          type: integer
+        createdAt:
+          type: string
+        experience:
+          $ref: "#/components/schemas/Experience"
+
+    RegisterInput:
+      type: object
+      required: [name, email, password]
+      properties:
+        name:
+          type: string
+          minLength: 2
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    BookingInput:
+      type: object
+      required: [experienceId, bookedDate, participants]
+      properties:
+        experienceId:
+          type: integer
+        bookedDate:
+          type: string
+        participants:
+          type: integer
+          minimum: 1
+          maximum: 10
+
+    FavoriteInput:
+      type: object
+      required: [experienceId]
+      properties:
+        experienceId:
+          type: integer
+
+    ProfileUpdate:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 2

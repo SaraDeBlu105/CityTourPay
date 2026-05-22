@@ -1,0 +1,30 @@
+Ho caricato una cartella zippata con il layout di una pagina web clonata da Figma (il codice HTML/CSS/JS esportato). La pagina originale è quella di Civitatis Roma (filtri e card di attività turistiche).
+
+Voglio che tu trasformi questo codice in un sito **completamente diverso nell’aspetto**, ma mantenendo **esattamente la stessa struttura, allineamenti e funzionalità di base** (filtri, griglia di post/card, barra di ricerca eventuale, slider prezzi ecc.).
+
+### Cosa deve rimanere identico:
+- Layout generale: posizione del header, sidebar filtri, area dei risultati (card).
+- Allineamenti: margini, padding, spaziature tra gli elementi.
+- Comportamento interattivo: i filtri devono continuare a funzionare (es. filtraggio per prezzo, categoria, ecc.), le card devono essere cliccabili o avere lo stesso effetto hover.
+- Struttura HTML: classi e ID possono essere rinominati, ma non rimuovere elementi strutturali.
+
+### Cosa deve cambiare per sembrare un sito diverso:
+1. **Colori**: usa una palette completamente nuova. Ecco alcuni esempi (scegli quella che preferisci o inventane una):
+   - Palette “Menta e pesca”: sfondo chiaro (#F9F6F0), card bianco, accenti pesca (#FFB7A8), pulsanti menta (#98DDCA), testo scuro (#2F3E46).
+   - Palette “Notte stellata”: sfondo scuro (#0B132B), card grigio scuro (#1C2541), accenti oro (#F4D03F), testo chiaro (#E0E1DD).
+   - Palette “Terra cotta”: sfondo avorio (#FDF6E3), card beige (#F4EADB), accenti terracotta (#E76F51), testo (#264653).
+2. **Font**: cambia il font principale con uno simile ma diverso (es. da Inter a Poppins, da Roboto a Open Sans). Usa Google Fonts.
+3. **Effetti visivi**: modifica ombre, bordi (es. da angoli retti ad angoli arrotondati di 12px), transizioni.
+4. **Immagini**: se ci sono immagini placeholder, sostituiscile con immagini nuove (usa Unsplash o placeholder generici) – ma mantieni le stesse dimensioni.
+5. **Testi**: cambia i testi di esempio (titoli, descrizioni) con contenuti fittizi coerenti con la nuova tematica (es. attività all’aria aperta, eventi culturali, destinazioni diverse).
+
+### Come farlo:
+- Riscrivi il CSS esistente (che probabilmente usa posizionamento assoluto e valori fissi) in un foglio di stile moderno (Flexbox/Grid) **senza alterare l’aspetto finale rispetto alla struttura originale**. Deve rimanere responsive.
+- Se il codice originale era “piatto” (es. posizionamento assoluto), rifattorizzalo per usare layout flessibili mantenendo lo stesso allineamento visivo.
+- I filtri lato client (JavaScript) devono continuare a funzionare senza errori.
+
+### Consegna:
+- Restituisci i file aggiornati (HTML, CSS, JS, eventuali asset) in una struttura pulita.
+- Fornisci un modo per visualizzare subito il sito (es. anteprima su Replit).
+
+Grazie!

@@ -44,6 +44,14 @@ export function setAuthTokenGetter(getter: AuthTokenGetter | null): void {
   _authTokenGetter = getter;
 }
 
+// Automatically set the authTokenGetter to read from localStorage for City Tour Italy
+setAuthTokenGetter(() => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("cti_token");
+  }
+  return null;
+});
+
 function isRequest(input: RequestInfo | URL): input is Request {
   return typeof Request !== "undefined" && input instanceof Request;
 }
