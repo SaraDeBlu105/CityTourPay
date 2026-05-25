@@ -1,0 +1,79 @@
+Aggiorna il frontend del progetto City Tour Italy mantenendo tutta l’infrastruttura esistente, il backend, i dati, il sistema di filtri e i post già presenti. Non ricreare il sito da zero. Devi solo rifattorizzare il layout delle pagine elenco, la struttura delle card e il pannello filtri per ottenere un’esperienza molto simile a Civitatis nella pagina risultati di New York, ma con i colori del brand già definiti: blu scuro #0B2F5E come primario e giallo #F4C542 come accent.
+L’obiettivo è un catalogo turistico pulito, premium e orientato alla conversione, con sidebar filtri verticale su desktop, elenco risultati a destra, e una gerarchia visiva molto chiara. La UI deve essere responsive, senza animazioni o parallax, con stile moderno, ordinato e leggibile.
+
+Cosa devi cambiare
+Mantieni la logica attuale di ricerca, filtraggio, routing e recupero dati.
+
+Modifica solo frontend, componenti UI, layout delle pagine e stile.
+
+Trasforma la pagina elenco in una struttura tipo marketplace di esperienze turistiche.
+
+Usa una sidebar filtri verticale su desktop e un drawer/accordion su mobile.
+
+Rendi le card esperienze uniformi, più compatte e più “commerciali”.
+
+Non cambiare il database o le API se non strettamente necessario.
+
+Layout da ottenere
+Header pagina con breadcrumb, titolo destinazione, breve descrizione e conteggio risultati.
+
+Barra superiore con ordinamento, filtri rapidi e magari pulsante per aprire i filtri su mobile.
+
+Colonna sinistra con filtri ben separati in box chiari.
+
+Colonna destra con lista/grid di card risultati.
+
+Card con immagine grande, titolo, descrizione breve, badge informativi, durata, valutazione, prezzo e CTA chiara.
+
+Look & feel simile a Civitatis, ma con brand color del progetto.
+
+Filtri da mostrare
+Categoria.
+
+Sotto-categoria.
+
+Durata.
+
+Fascia prezzo.
+
+Lingua.
+
+Valutazione.
+
+Disponibilità.
+
+Tipo esperienza.
+
+Cancellazione gratuita.
+
+Top seller.
+
+Ordinamento per popolarità, prezzo o rating.
+
+Regole di stile
+Sfondo chiaro.
+
+Blu #0B2F5E per elementi principali.
+
+Giallo #F4C542 per accent e CTA secondarie.
+
+Card con angoli arrotondati, ombre leggere, buona spaziatura.
+
+Tipografia leggibile e gerarchia forte.
+
+Niente effetti animati o decorativi inutili.
+
+Tutto deve essere molto pulito, professionale e facile da navigare.
+
+Componenti da aggiornare
+Page listing/archivio esperienze.
+
+Componente filtri.
+
+Componente card esperienza.
+
+Barra ordinamento.
+
+Header della pagina.
+
+Layout responsive desktop/mobile.
