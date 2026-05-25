@@ -3,7 +3,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
-import Home from "@/pages/home";
+import Homepage from "@/pages/homepage";
+import RomaListing from "@/pages/home";
 import ExperienceDetail from "@/pages/experience";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
@@ -33,7 +34,8 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/" component={Homepage} />
+      <Route path="/roma" component={RomaListing} />
       <Route path="/experience/:id" component={ExperienceDetail} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />

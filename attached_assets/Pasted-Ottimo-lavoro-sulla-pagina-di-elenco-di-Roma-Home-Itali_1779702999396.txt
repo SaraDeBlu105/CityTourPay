@@ -1,0 +1,45 @@
+Ottimo lavoro sulla pagina di elenco di Roma (Home > Italia > Roma). Ora devi aggiungere una **nuova homepage** per il progetto City Tour Italy.
+
+## Obiettivo
+Creare una homepage simile a quella di Civitatis (https://www.civitatis.com/it/) dove l'utente possa **selezionare una destinazione** e, cliccando su Roma, venga reindirizzato alla pagina di elenco che hai già realizzato (quella con sidebar filtri, card, ecc.).
+
+Tutta l’infrastruttura esistente (backend, dati, filtri, routing, API) deve rimanere identica. Non modificare la pagina di elenco già funzionante. Aggiungi solo la nuova homepage come entry point.
+
+## Cosa deve contenere la homepage
+- Layout moderno, pulito, premium, con i colori del brand:  
+  - Primario: blu scuro `#0B2F5E`  
+  - Accent: giallo `#F4C542`  
+  - Sfondo chiaro, tipografia leggibile, nessuna animazione o parallax.
+- Hero section con titolo, sottotitolo e (opzionale) una barra di ricerca semplice, ma l’elemento obbligatorio è una **sezione di destinazioni in evidenza**.
+- In questa sezione mostra **almeno Roma** come card/box cliccabile. Puoi aggiungere altre città fittizie o placeholder (es. Firenze, Venezia) ma al momento solo Roma deve portare alla pagina di elenco reale.
+- La card di Roma deve mostrare: immagine rappresentativa, nome città (“Roma”), magari un conteggio di esperienze (puoi prendere i dati esistenti dal database o usare un numero statico come “24 tour”).
+- Cliccando sulla card di Roma → naviga alla pagina di elenco già realizzata (es. percorso `/italia/roma` o quello che hai usato tu). Assicurati che la breadcrumb della pagina di elenco diventi “Home > Italia > Roma” coerente con la nuova homepage.
+- La homepage deve essere **responsive** (desktop/mobile) e coerente con lo stile delle altre pagine (nessuna discrepanza visiva).
+
+## Cosa NON devi fare
+- NON modificare la pagina di elenco di Roma né i suoi componenti (filtri, card, sidebar, etc.).
+- NON toccare backend, database, API, logica di filtraggio o routing esistente.
+- NON cancellare o rinominare rotte esistenti.
+
+## Tecnologie (presumibili)
+Usa lo stesso stack del progetto (React/Next/Vue/Angular? Replit avrà già la struttura). Adatta la nuova homepage ai componenti e allo stile globale già definiti (CSS modules, Tailwind, styled-components, etc.). Se il progetto usa un router, aggiungi la rotta per `/` (homepage).
+
+## Dettagli di stile per la homepage
+- Hero con sfondo chiaro o gradiente delicato (blu scuro tenue o bianco). Evita immagini pesanti.
+- Card destinazione: bordo arrotondato, ombra leggera, hover con leggero scale (senza animazioni brusche), testo chiaro, pulsante o area cliccabile.
+- Tipografia: titoli in blu scuro, accent giallo per bottoni secondari o dettagli.
+- Il layout generale deve risultare professionale, orientato alla conversione, facile da navigare.
+
+## Esempio di struttura homepage
+[Header con logo e nav]
+[Hero: "Scopri le migliori esperienze in Italia" + sottotitolo]
+[Sezione: "Destinazioni popolari"]
+
+Card Roma (immagine, nome, "Scopri Roma" o "Vedi tour")
+[Footer]
+
+text
+
+**Importante:** Assicurati che cliccando su Roma l’utente atterri esattamente sulla pagina di elenco che hai già generato (quella con sidebar filtri e card stile Civitatis). Non serve replicare i filtri o i risultati sulla homepage.
+
+Fornisci il codice/modifiche necessarie per implementare questa nuova homepage senza rompere nulla di esistente.
