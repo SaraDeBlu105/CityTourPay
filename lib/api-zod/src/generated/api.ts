@@ -39,6 +39,7 @@ export const ListExperiencesResponseItem = zod.object({
   "rating": zod.number(),
   "reviewCount": zod.number(),
   "imageUrl": zod.string(),
+  "galleryImages": zod.array(zod.string()),
   "createdAt": zod.string()
 })
 export const ListExperiencesResponse = zod.array(ListExperiencesResponseItem)
@@ -62,6 +63,7 @@ export const GetExperienceResponse = zod.object({
   "rating": zod.number(),
   "reviewCount": zod.number(),
   "imageUrl": zod.string(),
+  "galleryImages": zod.array(zod.string()),
   "createdAt": zod.string()
 })
 
@@ -220,6 +222,7 @@ export const ListMyBookingsResponseItem = zod.object({
   "rating": zod.number(),
   "reviewCount": zod.number(),
   "imageUrl": zod.string(),
+  "galleryImages": zod.array(zod.string()),
   "createdAt": zod.string()
 }).optional()
 })
@@ -245,6 +248,7 @@ export const ListFavoritesResponseItem = zod.object({
   "rating": zod.number(),
   "reviewCount": zod.number(),
   "imageUrl": zod.string(),
+  "galleryImages": zod.array(zod.string()),
   "createdAt": zod.string()
 }).optional()
 })

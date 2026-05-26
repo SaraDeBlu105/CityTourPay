@@ -15,6 +15,7 @@ import {
 } from "@workspace/api-client-react";
 import { useAuth } from "../contexts/AuthContext";
 import { Navbar } from "../components/layout/Navbar";
+import { PhotoGallery } from "../components/PhotoGallery";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -210,7 +211,8 @@ export default function ExperienceDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left column */}
           <div className="lg:col-span-2 space-y-8">
-            <div className="relative rounded-2xl overflow-hidden aspect-[16/9] md:aspect-[21/9] lg:aspect-auto lg:h-[500px]">
+            {/* Hero image with favourite button */}
+            <div className="relative rounded-2xl overflow-hidden aspect-[16/9] md:aspect-[21/9] lg:aspect-auto lg:h-[420px]">
               <img src={experience.imageUrl} alt={experience.title} className="w-full h-full object-cover" />
               <Button
                 variant="secondary"
@@ -235,6 +237,14 @@ export default function ExperienceDetail() {
                 </h1>
                 <p className="text-lg text-muted-foreground font-medium">{experience.shortDescription}</p>
               </div>
+
+              {/* Photo gallery */}
+              {experience.galleryImages && experience.galleryImages.length > 0 && (
+                <div>
+                  <h2 className="text-xl font-serif font-bold mb-3">Galleria fotografica</h2>
+                  <PhotoGallery images={experience.galleryImages} title={experience.title} />
+                </div>
+              )}
 
               <div className="flex flex-wrap gap-4 py-6 border-y border-border/50">
                 <div className="flex items-center text-foreground">

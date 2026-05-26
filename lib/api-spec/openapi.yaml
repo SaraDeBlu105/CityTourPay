@@ -528,7 +528,7 @@ components:
 
     Experience:
       type: object
-      required: [id, title, shortDescription, longDescription, price, durationMinutes, category, rating, reviewCount, imageUrl, createdAt]
+      required: [id, title, shortDescription, longDescription, price, durationMinutes, category, rating, reviewCount, imageUrl, galleryImages, createdAt]
       properties:
         id:
           type: integer
@@ -550,6 +550,10 @@ components:
           type: integer
         imageUrl:
           type: string
+        galleryImages:
+          type: array
+          items:
+            type: string
         createdAt:
           type: string
 

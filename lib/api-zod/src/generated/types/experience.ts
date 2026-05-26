@@ -17,5 +17,6 @@ export interface Experience {
   rating: number;
   reviewCount: number;
   imageUrl: string;
+  galleryImages: string[];
   createdAt: string;
 }

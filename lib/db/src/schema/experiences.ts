@@ -13,6 +13,7 @@ export const experiencesTable = pgTable("experiences", {
   rating: real("rating").notNull().default(4.5),
   reviewCount: integer("review_count").notNull().default(0),
   imageUrl: text("image_url").notNull(),
+  galleryImages: text("gallery_images").array().notNull().default([]),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

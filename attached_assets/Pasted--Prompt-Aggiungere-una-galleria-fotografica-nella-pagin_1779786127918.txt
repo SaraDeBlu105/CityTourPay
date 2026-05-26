@@ -1,0 +1,58 @@
+# Prompt: Aggiungere una galleria fotografica nella pagina dettaglio esperienza
+
+Abbiamo già un sito funzionante per City Tour Italy con pagina di dettaglio esperienza (dove ci sono calendario, prenotazione, recensioni, coupon). Ora devi **aggiungere una piccola galleria di immagini** in quella pagina, visibile a tutti gli utenti, integrata in modo bello e moderno (stile Civitatis / GetYourGuide).
+
+## Obiettivo
+Per **ogni esperienza** (tour), nella pagina di dettaglio, mostrare una galleria con **3-5 foto** (o più) che rappresentano il tour. La galleria deve essere:
+- Compatta ma accattivante (es. griglia di thumbnail + lightbox/modal al click).
+- Sviluppata con lo stesso stack del progetto (React, Tailwind o CSS moduli).
+- Responsive (desktop e mobile).
+- Coerente con i colori brand: blu scuro `#0B2F5E` e giallo `#F4C542`.
+
+## Cosa deve essere modificato
+
+### 1. Database e API (se non esiste già un campo per più immagini)
+- Controlla se la tabella `experiences` ha già un campo che contiene un array di URL di immagini (es. `gallery_images` o `photos`).
+- **Se non esiste**, crea una migrazione Drizzle per aggiungere una colonna `gallery_images` di tipo `text[]` o `jsonb` (array di stringhe).
+- Modifica le API (es. `GET /experiences/:id`) in modo che restituisca anche questo array (se non già presente).
+- **Non rompere** i campi esistenti (`image`, `title`, `description`...).
+
+### 2. Componente galleria
+Crea un nuovo componente `PhotoGallery` in `artifacts/city-tour-italy/src/components/PhotoGallery.tsx` (o dentro la cartella components).
+- Props: `images` (array di stringhe, URL delle foto).
+- Se l’array è vuoto o non definito, non mostrare nulla (o mostrare un placeholder discreto).
+- Layout:
+  - Su desktop: griglia 2x2 o 2x3 con thumbnails quadrate/rettangolari (aspect ratio 4:3).
+  - Su mobile: carosello orizzontale (scroll) oppure griglia 2x2.
+  - All’hover su thumbnail: leggero scale + overlay scuro.
+- Al click su una thumbnail: aprire un lightbox/modal con l’immagine a schermo intero e possibilità di navigare tra tutte le foto (precedente/successivo). Chiudi con tasto ESC o click fuori.
+- Utilizza librerie leggere se già presenti (es. `react-modal`, `swiper`), altrimenti implementa con CSS puro + state locale.
+- Stile: bordi arrotondati (`rounded-xl`), ombra leggera (`shadow-md`), transizioni fluide (ma niente animazioni pesanti).
+
+### 3. Integrazione nella pagina dettaglio
+Modifica il file `artifacts/city-tour-italy/src/pages/experience.tsx` (o `experience-detail.tsx`).
+- Recupera l’array `galleryImages` dall’oggetto `experience` (che arriva dall’API).
+- Mostra il componente `PhotoGallery` subito dopo il titolo e la descrizione breve, oppure tra la descrizione e il calendario (scegli la posizione migliore per la UX, ma ben visibile).
+- Se l’esperienza non ha immagini extra, puoi usare la singola immagine principale (`image`) come unico elemento della galleria (ma meglio avere immagini multiple).
+- Mantieni tutte le funzionalità esistenti (calendario, prenotazione, coupon, recensioni) invariati.
+
+### 4. Seed / dati di esempio (opzionale ma consigliato)
+Per testare visivamente la galleria, aggiungi alcune immagini di esempio nel seed del database (o tramite admin) per almeno una esperienza (es. “Tour del Colosseo”). Usa URL di placeholder di Unsplash o immagini libere.
+
+### 5. Stili finali
+- Assicurati che la galleria sia responsive e non rompa il layout su schermi piccoli.
+- Il componente deve integrarsi con lo stile esistente (sfondo chiaro, tipografia, spaziatura).
+- La lightbox deve avere sfondo scuro (`#0B2F5E` o nero con opacità), e pulsanti di navigazione in stile brand.
+
+## Cosa NON devi fare
+- Non modificare la logica di prenotazione, calendario, coupon o recensioni.
+- Non toccare altre pagine (homepage, listing, dashboard utente, admin) se non strettamente necessario.
+- Non alterare lo schema delle prenotazioni o degli utenti.
+
+## Verifica finale
+- La galleria appare solo nelle pagine dettaglio esperienza.
+- Se un’esperienza non ha `galleryImages`, la pagina funziona comunque senza errori.
+- Cliccando su una foto si apre la lightbox e si possono scorrere tutte le foto.
+- Le immagini si caricano in modo ottimizzato (usa `loading="lazy"` se possibile).
+
+Consegna le modifiche in formato patch (file per file) o descrizione chiara dei cambiamenti.
