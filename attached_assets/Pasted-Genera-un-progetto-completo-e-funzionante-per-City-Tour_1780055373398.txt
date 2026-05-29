@@ -1,0 +1,41 @@
+Genera un progetto completo e funzionante per City Tour Italy con le seguenti specifiche. Il progetto deve essere pronto all'uso, senza errori di dipendenze o configurazione. Deve funzionare su Windows con pnpm e PostgreSQL.
+
+## MODIFICHE RICHIESTE AL FRONTEND
+
+### 1. Sidebar filtri - Rinomina e modifica categorie
+- "Categoria" → rinominata in **"Tipologia di Tour"**
+- Le opzioni sotto "Tipologia di Tour" devono essere:
+  - "Tour a piedi"
+  - "Tour cucina"
+  - "Esperienze"
+- "Top Seller" → rinominato in **"Top Guide"**
+
+### 2. Pagina dettaglio esperienza
+Sotto la valutazione (stelle) e il conteggio delle recensioni, deve comparire un **selettore di quantità** (tipo carrello) dove l'utente può scegliere quante "opzioni" o "biglietti" vuole acquistare per quella esperienza.
+- Il prezzo totale deve aggiornarsi dinamicamente in base alla quantità selezionata (es. prezzo base × quantità).
+- Deve essere presente un pulsante **"Paga con PayPal"** che integri il sistema di pagamento PayPal (sandbox per test). Al momento del pagamento, invia l'importo corretto e la descrizione dell'esperienza.
+
+### 3. Sistema di pagamento PayPal
+- Usa l'API PayPal SDK (modalità sandbox).
+- Dopo il pagamento, mostra un messaggio di conferma all'utente.
+- (Opzionale) Salva la prenotazione nel database, ma non obbligatorio per il funzionamento base.
+
+## REQUISITI TECNICI
+
+- Il progetto deve essere basato sull'infrastruttura esistente (pnpm workspaces, Express, PostgreSQL, Drizzle, Vite).
+- Deve funzionare senza errori di versione di esbuild, rollup, lightningcss o tailwind su Windows.
+- Tutti i binari nativi per Windows (@esbuild/win32-x64, @rollup/rollup-win32-x64-msvc, @tailwindcss/oxide-win32-x64-msvc, lightningcss-win32-x64-msvc) devono essere inclusi nel package.json come devDependencies.
+- Aggiungi un file `.npmrc` nella root con: `resolution-mode=time-based`
+- Aggiungi un file `.env.example` con le variabili necessarie (DATABASE_URL, PORT, BASE_PATH, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET).
+- Il database deve includere almeno la tabella `experiences` con i campi: id, title, short_description, long_description, price, duration_minutes, category, rating, review_count, image_url, gallery_images, created_at, city.
+- La homepage deve mostrare la destinazione Roma e, cliccando, portare alla pagina di elenco con i filtri funzionanti.
+
+## CONSEGNA
+
+Fornisci il progetto completo, compresso in ZIP, pronto per essere estratto su Windows e avviato con:
+1. `pnpm install`
+2. `pnpm --filter @workspace/db run push`
+3. `pnpm --filter @workspace/api-server run dev`
+4. `pnpm --filter @workspace/city-tour-italy run dev`
+
+Non devono esserci errori all'avvio.

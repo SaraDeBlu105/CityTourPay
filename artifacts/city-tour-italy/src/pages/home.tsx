@@ -40,10 +40,8 @@ const BRAND_YELLOW = "#F4C542";
 
 const CATEGORIES = [
   { label: "Tour a piedi", count: 14 },
-  { label: "Musei", count: 9 },
-  { label: "Cibo", count: 7 },
-  { label: "Avventura", count: 5 },
-  { label: "Arte & Cultura", count: 11 },
+  { label: "Tour cucina", count: 7 },
+  { label: "Esperienze", count: 11 },
 ];
 
 const DURATIONS = [
