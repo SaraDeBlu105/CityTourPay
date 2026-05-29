@@ -21,12 +21,35 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Star, Clock, MapPin, Heart, Users, CalendarIcon, Check, Tag, MessageSquare, ShieldCheck } from "lucide-react";
+import {
+  Star,
+  Clock,
+  MapPin,
+  Heart,
+  Users,
+  CalendarIcon,
+  Check,
+  Tag,
+  MessageSquare,
+  ShieldCheck,
+  Minus,
+  Plus,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
+import {
+  PayPalScriptProvider,
+  PayPalButtons,
+} from "@paypal/react-paypal-js";
 
+const BRAND_NAVY = "#0B2F5E";
+const BRAND_YELLOW = "#F4C542";
+
+const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID as string | undefined;
+
+/* ── Star rating input ── */
 function StarRating({ value, onChange }: { value: number; onChange?: (v: number) => void }) {
   const [hover, setHover] = useState(0);
   return (
@@ -51,6 +74,107 @@ function StarRating({ value, onChange }: { value: number; onChange?: (v: number)
   );
 }
 
+/* ── Quantity stepper ── */
+function QuantityStepper({
+  value,
+  onChange,
+  min = 1,
+  max = 10,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+  max?: number;
+}) {
+  return (
+    <div className="flex items-center border border-border rounded-lg overflow-hidden">
+      <button
+        type="button"
+        onClick={() => onChange(Math.max(min, value - 1))}
+        disabled={value <= min}
+        className="w-10 h-10 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors disabled:opacity-40"
+      >
+        <Minus className="w-4 h-4" />
+      </button>
+      <div className="flex-1 text-center font-bold text-base tabular-nums select-none py-2">
+        {value}
+      </div>
+      <button
+        type="button"
+        onClick={() => onChange(Math.min(max, value + 1))}
+        disabled={value >= max}
+        className="w-10 h-10 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors disabled:opacity-40"
+      >
+        <Plus className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
+
+/* ── PayPal section ── */
+function PayPalSection({
+  amount,
+  description,
+  onSuccess,
+}: {
+  amount: number;
+  description: string;
+  onSuccess: () => void;
+}) {
+  const { toast } = useToast();
+
+  if (!PAYPAL_CLIENT_ID) {
+    return (
+      <p className="text-xs text-muted-foreground text-center">
+        PayPal non configurato. Imposta <code>VITE_PAYPAL_CLIENT_ID</code>.
+      </p>
+    );
+  }
+
+  return (
+    <PayPalScriptProvider
+      options={{
+        clientId: PAYPAL_CLIENT_ID,
+        currency: "EUR",
+      }}
+    >
+      <PayPalButtons
+        style={{ layout: "vertical", color: "gold", shape: "rect", label: "pay" }}
+        createOrder={(_data, actions) =>
+          actions.order.create({
+            intent: "CAPTURE",
+            purchase_units: [
+              {
+                amount: { currency_code: "EUR", value: amount.toFixed(2) },
+                description,
+              },
+            ],
+          })
+        }
+        onApprove={async (_data, actions) => {
+          await actions.order!.capture();
+          toast({
+            title: "Pagamento completato!",
+            description: "La tua prenotazione è confermata. A presto a Roma!",
+          });
+          onSuccess();
+        }}
+        onError={() => {
+          toast({
+            title: "Errore nel pagamento PayPal",
+            description: "Riprova o usa un altro metodo.",
+            variant: "destructive",
+          });
+        }}
+        onCancel={() => {
+          toast({ title: "Pagamento annullato" });
+        }}
+      />
+    </PayPalScriptProvider>
+  );
+}
+
+/* ── Main page ── */
 export default function ExperienceDetail() {
   const { id } = useParams<{ id: string }>();
   const experienceId = Number(id);
@@ -64,6 +188,7 @@ export default function ExperienceDetail() {
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountPercent: number } | null>(null);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
+  const [paypalPaid, setPaypalPaid] = useState(false);
 
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState("");
@@ -101,7 +226,7 @@ export default function ExperienceDetail() {
         },
       });
     } else {
-      addFavorite.mutate({ data: { experienceId } }, {  
+      addFavorite.mutate({ data: { experienceId } }, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getListFavoritesQueryKey() });
           toast({ title: "Aggiunto ai preferiti" });
@@ -129,7 +254,7 @@ export default function ExperienceDetail() {
     }
   };
 
-  const handleBook = () => {
+  const handleBookTraditional = () => {
     if (!user) { setLocation("/login"); return; }
     if (!date) {
       toast({ title: "Seleziona una data", variant: "destructive" });
@@ -203,15 +328,17 @@ export default function ExperienceDetail() {
   const discount = appliedCoupon ? basePrice * (appliedCoupon.discountPercent / 100) : 0;
   const finalPrice = basePrice - discount;
 
+  const paypalDescription = `${experience.title} × ${participants} pers.`;
+
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background">
       <Navbar />
 
       <main className="container mx-auto px-4 py-8 max-w-6xl flex-1">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left column */}
+          {/* ── Left column ── */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Hero image with favourite button */}
+            {/* Hero image */}
             <div className="relative rounded-2xl overflow-hidden aspect-[16/9] md:aspect-[21/9] lg:aspect-auto lg:h-[420px]">
               <img src={experience.imageUrl} alt={experience.title} className="w-full h-full object-cover" />
               <Button
@@ -227,11 +354,13 @@ export default function ExperienceDetail() {
 
             <div className="space-y-6">
               <div>
+                {/* Rating + reviews */}
                 <div className="flex items-center space-x-2 text-sm font-medium text-amber-600 mb-3">
                   <Star className="w-5 h-5 fill-current" />
                   <span className="text-lg">{experience.rating.toFixed(1)}</span>
                   <span className="text-muted-foreground font-normal">({experience.reviewCount} recensioni)</span>
                 </div>
+
                 <h1 className="text-3xl md:text-5xl font-serif font-bold text-foreground mb-4 leading-tight">
                   {experience.title}
                 </h1>
@@ -246,6 +375,7 @@ export default function ExperienceDetail() {
                 </div>
               )}
 
+              {/* Meta badges */}
               <div className="flex flex-wrap gap-4 py-6 border-y border-border/50">
                 <div className="flex items-center text-foreground">
                   <Clock className="w-5 h-5 mr-2 text-primary" />
@@ -264,6 +394,7 @@ export default function ExperienceDetail() {
                 </div>
               </div>
 
+              {/* Long description */}
               <div className="space-y-4">
                 <h2 className="text-2xl font-serif font-bold">L'esperienza</h2>
                 <div className="prose prose-lg dark:prose-invert text-muted-foreground max-w-none">
@@ -367,112 +498,143 @@ export default function ExperienceDetail() {
             </div>
           </div>
 
-          {/* Booking sidebar */}
+          {/* ── Booking sidebar ── */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24">
+            <div className="sticky top-24 space-y-4">
               <Card className="border shadow-lg">
-                <CardContent className="p-6">
-                  <div className="mb-6">
+                <CardContent className="p-6 space-y-5">
+                  {/* Price display */}
+                  <div className="flex items-baseline gap-2">
                     <span className="text-3xl font-bold text-foreground">€{experience.price}</span>
-                    <span className="text-muted-foreground"> / persona</span>
+                    <span className="text-muted-foreground">/ persona</span>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="date">Scegli una data</Label>
-                      <div className="relative">
-                        <CalendarIcon className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                        <Input
-                          id="date"
-                          type="date"
-                          min={today}
-                          value={date}
-                          onChange={(e) => setDate(e.target.value)}
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="participants">Partecipanti</Label>
-                      <div className="relative">
-                        <Users className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                        <Input
-                          id="participants"
-                          type="number"
-                          min={1}
-                          max={10}
-                          value={participants}
-                          onChange={(e) => setParticipants(parseInt(e.target.value))}
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Coupon code */}
-                    <div className="space-y-2">
-                      <Label htmlFor="coupon">Codice sconto</Label>
-                      <div className="flex gap-2">
-                        <div className="relative flex-1">
-                          <Tag className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id="coupon"
-                            placeholder="es. WELCOME10"
-                            value={couponCode}
-                            onChange={(e) => {
-                              setCouponCode(e.target.value.toUpperCase());
-                              if (appliedCoupon) setAppliedCoupon(null);
-                            }}
-                            className="pl-9 uppercase text-sm"
-                          />
-                        </div>
-                        <Button
-                          variant="outline"
-                          onClick={handleApplyCoupon}
-                          disabled={validatingCoupon || !couponCode.trim()}
-                          className="shrink-0"
-                        >
-                          {validatingCoupon ? "..." : "Applica"}
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Price breakdown */}
-                    <div className="rounded-lg bg-muted/50 p-4 space-y-1.5 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          €{experience.price} × {participants} pers.
-                        </span>
-                        <span>€{basePrice.toFixed(2)}</span>
-                      </div>
-                      {appliedCoupon && (
-                        <div className="flex justify-between text-green-600 font-medium">
-                          <span>Sconto {appliedCoupon.discountPercent}% ({appliedCoupon.code})</span>
-                          <span>-€{discount.toFixed(2)}</span>
-                        </div>
-                      )}
-                      <div className="flex justify-between font-bold text-base pt-1 border-t border-border/50">
-                        <span>Totale</span>
-                        <span>€{finalPrice.toFixed(2)}</span>
-                      </div>
-                    </div>
-
-                    <Button
-                      className="w-full h-12 text-lg font-medium bg-primary text-primary-foreground hover:bg-primary/90"
-                      onClick={handleBook}
-                      disabled={createBooking.isPending}
-                    >
-                      {createBooking.isPending ? "Prenotazione..." : "Prenota ora"}
-                    </Button>
-
-                    <p className="text-center text-xs text-muted-foreground mt-2">
-                      Non ti verrà addebitato alcun importo in questa fase.
+                  {/* Quantity selector */}
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-primary" />
+                      Partecipanti
+                    </Label>
+                    <QuantityStepper
+                      value={participants}
+                      onChange={setParticipants}
+                      min={1}
+                      max={10}
+                    />
+                    <p className="text-xs text-muted-foreground text-right">
+                      Subtotale: <span className="font-semibold text-foreground">€{basePrice.toFixed(2)}</span>
                     </p>
                   </div>
+
+                  {/* Date picker */}
+                  <div className="space-y-2">
+                    <Label htmlFor="date" className="flex items-center gap-2">
+                      <CalendarIcon className="w-4 h-4 text-primary" />
+                      Scegli una data
+                    </Label>
+                    <Input
+                      id="date"
+                      type="date"
+                      min={today}
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Coupon code */}
+                  <div className="space-y-2">
+                    <Label htmlFor="coupon" className="flex items-center gap-2">
+                      <Tag className="w-4 h-4 text-primary" />
+                      Codice sconto
+                    </Label>
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <Input
+                          id="coupon"
+                          placeholder="es. WELCOME10"
+                          value={couponCode}
+                          onChange={(e) => {
+                            setCouponCode(e.target.value.toUpperCase());
+                            if (appliedCoupon) setAppliedCoupon(null);
+                          }}
+                          className="uppercase text-sm"
+                        />
+                      </div>
+                      <Button
+                        variant="outline"
+                        onClick={handleApplyCoupon}
+                        disabled={validatingCoupon || !couponCode.trim()}
+                        className="shrink-0"
+                      >
+                        {validatingCoupon ? "..." : "Applica"}
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Price breakdown */}
+                  <div className="rounded-xl border border-border p-4 space-y-1.5 text-sm bg-muted/30">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        €{experience.price} × {participants} pers.
+                      </span>
+                      <span className="font-medium">€{basePrice.toFixed(2)}</span>
+                    </div>
+                    {appliedCoupon && (
+                      <div className="flex justify-between text-green-600 font-medium">
+                        <span>Sconto {appliedCoupon.discountPercent}% ({appliedCoupon.code})</span>
+                        <span>-€{discount.toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between font-bold text-base pt-2 border-t border-border">
+                      <span>Totale</span>
+                      <span style={{ color: BRAND_NAVY }}>€{finalPrice.toFixed(2)}</span>
+                    </div>
+                  </div>
+
+                  {/* PayPal paid confirmation */}
+                  {paypalPaid ? (
+                    <div className="rounded-xl bg-green-50 border border-green-200 p-4 text-center space-y-1">
+                      <p className="text-green-700 font-bold text-base">✓ Pagamento completato!</p>
+                      <p className="text-green-600 text-sm">La tua prenotazione è confermata.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {/* PayPal button */}
+                      <div>
+                        <p className="text-xs text-muted-foreground text-center mb-2">Paga subito con</p>
+                        <PayPalSection
+                          amount={finalPrice}
+                          description={paypalDescription}
+                          onSuccess={() => setPaypalPaid(true)}
+                        />
+                      </div>
+
+                      {/* Divider */}
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1 h-px bg-border" />
+                        <span className="text-xs text-muted-foreground">oppure</span>
+                        <div className="flex-1 h-px bg-border" />
+                      </div>
+
+                      {/* Traditional booking */}
+                      <Button
+                        className="w-full h-11 font-semibold"
+                        style={{ backgroundColor: BRAND_NAVY, color: "white" }}
+                        onClick={handleBookTraditional}
+                        disabled={createBooking.isPending}
+                      >
+                        {createBooking.isPending ? "Prenotazione..." : "Prenota ora (paga dopo)"}
+                      </Button>
+                      <p className="text-center text-xs text-muted-foreground">
+                        Non ti verrà addebitato alcun importo in questa fase.
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
-              <div className="mt-6 p-4 bg-secondary/10 rounded-xl flex gap-3">
+              {/* Cancellation notice */}
+              <div className="p-4 bg-secondary/10 rounded-xl flex gap-3">
                 <div className="bg-secondary/20 p-2 rounded-full h-fit">
                   <Check className="w-5 h-5 text-secondary" />
                 </div>

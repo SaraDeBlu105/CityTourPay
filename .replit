@@ -33,3 +33,8 @@ externalPort = 3000
 
 [nix]
 channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+VITE_PAYPAL_CLIENT_ID = "AezVwqRNRisVxZ-_8f_Q8yAKv66cREgx1KK1GMC2eug_3Wd2leBPOfjPF_k74rnz0tdj3g0YPYU6vP8D"

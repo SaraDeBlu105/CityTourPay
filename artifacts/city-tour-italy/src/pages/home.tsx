@@ -258,7 +258,7 @@ export default function Home() {
           style={topSeller ? { backgroundColor: BRAND_NAVY, borderColor: BRAND_NAVY } : {}}
         >
           <TrendingUp className="w-4 h-4 flex-shrink-0" />
-          Top Seller
+          Top Guide
         </button>
         <button
           onClick={() => setFreeCancellation(!freeCancellation)}
@@ -276,7 +276,7 @@ export default function Home() {
       </div>
 
       {/* Category */}
-      <FilterSection title="Categoria">
+      <FilterSection title="Tipologia di Tour">
         <div className="space-y-0.5">
           {CATEGORIES.map((c) => (
             <CheckRow
@@ -560,7 +560,7 @@ export default function Home() {
                     className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full text-white"
                     style={{ backgroundColor: BRAND_NAVY }}
                   >
-                    Top Seller <button onClick={() => setTopSeller(false)}><X className="w-3 h-3" /></button>
+                    Top Guide <button onClick={() => setTopSeller(false)}><X className="w-3 h-3" /></button>
                   </span>
                 )}
                 {freeCancellation && (
@@ -632,7 +632,7 @@ export default function Home() {
                             className="text-xs font-bold px-2 py-0.5 rounded-full shadow-sm"
                             style={{ backgroundColor: BRAND_YELLOW, color: "#1a1a1a" }}
                           >
-                            Top Seller
+                            Top Guide
                           </span>
                         )}
                       </div>
